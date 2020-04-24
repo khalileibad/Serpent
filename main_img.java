@@ -74,7 +74,7 @@ public class main_img {
 		//Get Or Generate input data
 		//write image
 		try{
-			File input = new File("img/baboon.png");
+			File input = new File("img/Lena.png");
 			BufferedImage image = ImageIO.read(input);
 			
 			x_length = image.getWidth();
@@ -144,7 +144,7 @@ public class main_img {
 		
 		//write image
 		try{
-			f = new File("enc_img/"+System.currentTimeMillis()+".png");
+			f = new File("enc_img/LLena_"+System.currentTimeMillis()+".png");
 			ImageIO.write(img, "png", f);
 		}catch(Exception e){
 			System.out.println("Error in write image: " + e);
@@ -153,14 +153,23 @@ public class main_img {
 	
 	private static byte[][] SEQ_ENC(byte[][] in,byte[][] block_keys)
 	{
-		byte [][] last_in = new byte[in.length][16];
+		byte [][] last_in = new byte[in.length][in[0].length];
+		byte [] x = new byte[16];
 		Object sessionKey;
+		
 		try{
 			startENCTime 	= System.currentTimeMillis();
-			for(int i=0;i<block_no;i++)
+			
+			for(int i=0;i<in.length;i++)
 			{
-				sessionKey	= serpent.makeKey(block_keys[i]);
-				last_in[i]	= serpent.blockEncrypt(in[i], 0, sessionKey);
+				for(int j=0;j<in[i].length/16; j++)
+				{
+					sessionKey	= serpent.makeKey(block_keys[j]);
+					System.arraycopy(in[i], j * 16, x, 0 , 16);
+					x	= serpent.blockEncrypt(x, 0, sessionKey);
+					System.arraycopy(x, 0, last_in[i] ,j * 16 , 16);
+					
+				}
 			}
 			endENCTime 	= System.currentTimeMillis();
 		}catch(Exception e)
@@ -172,19 +181,28 @@ public class main_img {
 	
 	private static byte[][] SEQ_DEC(byte[][] in,byte[][] block_keys)
 	{
-		byte [][] last_in = new byte[in.length][16];
+	
+		byte [][] last_in = new byte[in.length][in[0].length];
+		byte [] x = new byte[16];
 		Object sessionKey;
+		
 		try{
 			startDECTime 	= System.currentTimeMillis();
-			for(int i=0;i<block_no;i++)
+			for(int i=0;i<in.length;i++)
 			{
-				sessionKey	= serpent.makeKey(block_keys[i]);
-				last_in[i]	= serpent.blockDecrypt(in[i], 0, sessionKey);
+				for(int j=0;j<in[i].length/16; j++)
+				{
+					sessionKey	= serpent.makeKey(block_keys[j]);
+					System.arraycopy(in[i], j * 16, x, 0 , 16);
+					x	= serpent.blockDecrypt(x, 0, sessionKey);
+					System.arraycopy(x, 0, last_in[i] ,j * 16 , 16);
+					
+				}
 			}
 			endDECTime 	= System.currentTimeMillis();
 		}catch(Exception e)
 		{
-			System.out.println("exception AAA: "+e);
+			System.out.println("exception in SEQ_ENC: "+e);
 		}
 		return last_in;
 	}
@@ -271,6 +289,13 @@ public class main_img {
 					shaotic b = new shaotic(key1,block_no+1);
 					block_keys = b.keys;
 				break;
+				case 2:
+					//NORMAL
+					for(int i=0;i<block_keys.length; i++)
+					{
+						block_keys[i] = key1;
+					}
+				break;
 			}
 			endKEYTime 	= System.currentTimeMillis();
 			
@@ -279,34 +304,23 @@ public class main_img {
 		
 			if(type == 0)//SEQUENSIAL
 			{
-				/*byte[][] in_seq = new byte[block_no][16];
-				
-				byte[][] last_in = new byte[block_no][16];
-				byte[][] last_dec = new byte[block_no][16];
-		
-				for(int i = 0;i< block_no;i++)
-				{
-					System.arraycopy(in, i * 16, in_seq[i], 0 , 16);
-					//public static void arraycopy(Object src, int srcPos, Object dest, int destPos, int length)
-				}
-					
 				switch(fun_type)
 				{
 					case 0:
 						//ENC & DEC
-						last_in = SEQ_ENC(in_seq,block_keys);
+						last_in = SEQ_ENC(in,block_keys);
 						last_dec = SEQ_DEC(last_in,block_keys);
 					break;
 					case 1:
 						//ENC
-						last_in = SEQ_ENC(in_seq,block_keys);
+						last_in = SEQ_ENC(in,block_keys);
 					break;
 					case 2:
 						//DEC
-						last_dec = SEQ_DEC(in_seq,block_keys);
+						last_dec = SEQ_DEC(in,block_keys);
 					break;
 				}
-				*/System.out.println("Not Finishings");
+				
 			}else
 			{//PARALLEL
 				switch(fun_type)
@@ -332,13 +346,11 @@ public class main_img {
 						//ENC & DEC
 						last_dec= PAR_DEC(in		,block_keys ,mode_type);
 						last_in	= PAR_ENC(last_in	,block_keys	,mode_type);
-						set_data(last_in);
-						set_data(last_dec);
 					break;
-						
 				}
-				
 			}
+			set_data(last_in);
+			set_data(last_dec);
 			myWriter.write("KEY Time, "+(endKEYTime - startKEYTime )+",");
 			myWriter.write("ENC Time, "+(endENCTime - startENCTime )+",");
 			myWriter.write("DEC Time, "+(endDECTime - startDECTime )+"\n");
@@ -381,6 +393,10 @@ public class main_img {
 				myWriter.write("Functions : DEC \n");
 			}
 			running(key1, type, key_type, mode_type, fun_type,myWriter);
+			running(key1, type, key_type, mode_type, fun_type,myWriter);
+			running(key1, type, key_type, mode_type, fun_type,myWriter);
+			running(key1, type, key_type, mode_type, fun_type,myWriter);
+			running(key1, type, key_type, mode_type, fun_type,myWriter);
 			
 			myWriter.close();
 		} catch (Exception e) {
@@ -399,6 +415,7 @@ public class main_img {
 		Args[1] : Key Type
 			0 => BKG
 			1 => SHAOTIC
+			2 => Normal keys
 		
 		Args[2] : MODE OF OPERATION
 			0 => ECB
@@ -411,9 +428,9 @@ public class main_img {
 		*/
 		int type 		= 1;
 		int key_type 	= 1;
-		int mode_type 	= 1;
+		int mode_type 	= 0;
 		int fun_type 	= 0;
-		
+		System.out.println( "ssss");
 		if(args.length == 4)
 		{
 			type 		= Integer.parseInt(args[0]);
