@@ -174,7 +174,7 @@ public class parllel extends RecursiveTask<byte[]>
 			byte[] result = new byte[x.length];
 			for(int i=0;i<result.length;i++)
 			{
-				result[i] = (byte) ((int)x[i] ^ (int)y[i]);
+				result[i] = (byte) (x[i] ^ y[i]);
 			}
 			return result;
 		}
