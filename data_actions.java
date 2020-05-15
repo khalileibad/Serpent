@@ -16,13 +16,13 @@ public class data_actions {
 	private static int x_length 	= 0;
 	private static int y_lenght 	= 0;
 	private static int added_pxl 	= 0;
-	private static String ImageName = "baboon";
+	private static String ImageName = "baboon"; //   Lena
 	private static String EXT 		= "png";
 	private static int type 		= 0;
 	private static int width 		= 0;
 	private static int height 		= 0;
-	private static int len_a 		= 500; //620 JPG
-	private static byte[] main_a	= new byte[500];
+	private static int len_a 		= 620; //620 JPG
+	private static byte[] main_a	= new byte[620];
 	
 	
 	public data_actions(int t)

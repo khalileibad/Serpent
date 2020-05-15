@@ -28,11 +28,11 @@ public class main_img {
 	private static int block_no 		= 0;
 	
 	
-	private static int type 			= 0;
+	private static int type 			= 1;
 	private static int key_type 		= 1;
 	private static int mode_type 		= 1;
 	private static int fun_type 		= 0;
-	private static int file_type 		= 3;
+	private static int file_type 		= 1;
 	/*
 		Args[0] : Type
 			0 => SEQ
