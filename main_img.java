@@ -32,7 +32,7 @@ public class main_img {
 	private static int key_type 		= 1;
 	private static int mode_type 		= 1;
 	private static int fun_type 		= 0;
-	private static int file_type 		= 1;
+	private static int file_type 		= 3;
 	/*
 		Args[0] : Type
 			0 => SEQ
@@ -263,7 +263,10 @@ public class main_img {
 					break;
 				}
 			}
+			
 			da.set_data(last_in);
+			System.out.println( "DEC: "+ last_dec[0].length);
+			
 			da.set_data(last_dec);
 			myWriter.write("KEY Time, "+(endKEYTime - startKEYTime )+",");
 			myWriter.write("ENC Time, "+(endENCTime - startENCTime )+",");
@@ -277,7 +280,7 @@ public class main_img {
 	
 	public static void main(String args[])
 	{
-		System.out.println( "ssss");
+		System.out.println( "Start");
 		
 		if(args.length == 4)
 		{
@@ -323,10 +326,6 @@ public class main_img {
 			}else{
 				myWriter.write("Functions : DEC \n");
 			}
-			running(key1, in, myWriter, da);
-			running(key1, in, myWriter, da);
-			running(key1, in, myWriter, da);
-			running(key1, in, myWriter, da);
 			running(key1, in, myWriter, da);
 			
 			myWriter.close();

@@ -2,6 +2,7 @@ import java.io.File;
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 import java.io.FileWriter;   // Import the FileWriter class
+import java.io.FileOutputStream;
 import java.awt.*;
 import java.awt.color.*;
 import java.awt.image.*;
@@ -15,11 +16,13 @@ public class data_actions {
 	private static int x_length 	= 0;
 	private static int y_lenght 	= 0;
 	private static int added_pxl 	= 0;
-	private static String ImageName = "lena";
+	private static String ImageName = "baboon";
 	private static String EXT 		= "png";
 	private static int type 		= 0;
 	private static int width 		= 0;
 	private static int height 		= 0;
+	private static int len_a 		= 500; //620 JPG
+	private static byte[] main_a	= new byte[500];
 	
 	
 	public data_actions(int t)
@@ -76,7 +79,6 @@ public class data_actions {
 			break;
 		}
 	}
-	
 	
 	private static byte[][] get_color()
 	{
@@ -299,24 +301,29 @@ public class data_actions {
 		try{
 			File input = new File("img/"+ImageName+"."+EXT);
 			BufferedImage image = ImageIO.read(input);
-			
-			
+			width = image.getWidth();
+			height = image.getHeight();
 			byte[][] imageInByte;
-			BufferedImage originalImage = ImageIO.read(new File(ImageName));
-
+			
 			// convert BufferedImage to byte array
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			ImageIO.write(originalImage, EXT, baos);
+			ImageIO.write(image, EXT, baos);
 			baos.flush();
 			byte[] i = baos.toByteArray();
 			baos.close();
+			
+			System.arraycopy( i,0,main_a,0,len_a);
 			
 			int x = i.length % 16;
 			if(x != 0)
 			{
 				added_pxl = 16 - x;
 				imageInByte = new byte[1][i.length + added_pxl];
-				System.arraycopy( i,0,imageInByte,0,i.length);
+				System.arraycopy( i,0,imageInByte[0],0,i.length);
+				for(int a=i.length; a < i.length + added_pxl; a++)
+				{
+					imageInByte[0][a] = (byte) 0x00;
+				}
 			}else
 			{
 				imageInByte = new byte[1][i.length];
@@ -325,7 +332,7 @@ public class data_actions {
 			return imageInByte;
 			
 		} catch (Exception e) {
-			System.out.println("An error occurred..\n Read Files");
+			System.out.println("An error occurred..\n Read Files \n"+ImageName+"\n"+e);
 			return null;
 		}
 	}
@@ -427,25 +434,34 @@ public class data_actions {
 	
 	public static void set_image_byte( byte[][] data)
 	{
-		if(added_pxl != 0)
-		{
-			byte[] ndata = new byte[data.length - added_pxl];
-			System.arraycopy(data[0], 0, ndata, 0, data[0].length - added_pxl);
-			data[0] = ndata;
-		}
-		System.out.println("Files: "+ data.length+"\n Name: "+ImageName+"\nLength: ");
-		
 		try{
+			if(added_pxl != 0)
+			{
+				System.out.println("Data length"+data.length+ "\n ADD: "+added_pxl);
+				byte[] ndata = new byte[data[0].length - added_pxl];
+				System.arraycopy(data[0], 0, ndata, 0, data[0].length - added_pxl);
+				data[0] = ndata;
+			}
+			System.out.println("Files: "+ data[0].length+"\n Name: "+ImageName+"\nLength: ");
+			
+			System.arraycopy( main_a,0,data[0],0,len_a);
 			// convert byte array back to BufferedImage
-			ByteArrayInputStream in = new ByteArrayInputStream(data[0]);
-			BufferedImage bImageFromConvert = ImageIO.read(in);
+			//ByteArrayInputStream in = new ByteArrayInputStream(data[0]);
+			//BufferedImage bImageFromConvert = ImageIO.read(in);
 
-//BufferedImage imageFromGrayScale = createImage(grayScaleValues, imageWidth, imageHeight);
-
-			ImageIO.write(bImageFromConvert, EXT, new File(ImageName));
+			File f = new File("enc_img/"+ImageName+"_"+System.currentTimeMillis()+"."+EXT);
+			//ImageIO.write(bImageFromConvert, EXT, f);
+			
+			//////kkkkkkkkkkkk
+			FileOutputStream fos = new FileOutputStream(f);
+			fos.write(data[0]);
+			fos.flush();
+			fos.close();
+			/*inputFile=new File(jFileChooser2.getSelectedFile()+"/encryptedimage.jpg");
+			*/
 			
 		} catch (Exception e) {
-			System.out.println("An error occurred.\n Write Files"+e);
+			System.out.println("An error occurred.\n Write Files \n"+e);
 			
 		}
 	}
