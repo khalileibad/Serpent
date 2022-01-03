@@ -1,8 +1,6 @@
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.RecursiveTask;
 
-import java.lang.*;
-
 import java.util.*;
 import java.io.*;
 import java.awt.*;
@@ -99,7 +97,7 @@ public class main_img {
 		Object sessionKey;
 		
 		try{
-			startENCTime 	= System.nanoTime();
+			startENCTime 	= System.currentTimeMillis();
 			
 			for(int i=0;i<in.length;i++)
 			{
@@ -112,7 +110,7 @@ public class main_img {
 					
 				}
 			}
-			endENCTime 	= System.nanoTime();
+			endENCTime 	= System.currentTimeMillis();
 		}catch(Exception e)
 		{
 			System.out.println("exception in SEQ_ENC: "+e);
@@ -128,7 +126,7 @@ public class main_img {
 		Object sessionKey;
 		
 		try{
-			startDECTime 	= System.nanoTime();
+			startDECTime 	= System.currentTimeMillis();
 			for(int i=0;i<in.length;i++)
 			{
 				for(int j=0;j<in[i].length/16; j++)
@@ -140,7 +138,7 @@ public class main_img {
 					
 				}
 			}
-			endDECTime 	= System.nanoTime();
+			endDECTime 	= System.currentTimeMillis();
 		}catch(Exception e)
 		{
 			System.out.println("exception in SEQ_ENC: "+e);
@@ -150,7 +148,7 @@ public class main_img {
 	
 	private static byte[][] PAR_ENC(byte[][] in ,byte[][] block_keys , int mode)
 	{
-		startENCTime 	= System.nanoTime();
+		startENCTime 	= System.currentTimeMillis();
 		byte[][] last_in = new byte[in.length][in[0].length];
 		
 		for(int i=0;i<in.length;i++)
@@ -159,14 +157,14 @@ public class main_img {
 			last_in[i] = pool.invoke(Parr_enc_r);
 		}
 		
-		endENCTime 	= System.nanoTime();
+		endENCTime 	= System.currentTimeMillis();
 		
 		return last_in;
 	}
 	
 	private static byte[][] PAR_DEC(byte[][] in,byte[][] block_keys, int mode)
 	{
-		startDECTime 	= System.nanoTime();
+		startDECTime 	= System.currentTimeMillis();
 		byte[][] last_in = new byte[in.length][in[0].length];
 		
 		for(int i=0;i<in.length;i++)
@@ -175,7 +173,7 @@ public class main_img {
 			last_in[i] = pool.invoke(Parr_enc_r);
 		}
 		
-		endDECTime 	= System.nanoTime();
+		endDECTime 	= System.currentTimeMillis();
 		
 		return last_in;
 	}
@@ -197,8 +195,7 @@ public class main_img {
 		try{
 			
 			//Keys
-			//startKEYTime 	= System.currentTimeMillis();
-			startKEYTime 	= System.nanoTime();
+			startKEYTime 	= System.currentTimeMillis();
 			switch(key_type)
 			{
 				case 0:
@@ -219,8 +216,7 @@ public class main_img {
 					}
 				break;
 			}
-			//endKEYTime 	= System.nanoTime();
-			endKEYTime 	= System.nanoTime();
+			endKEYTime 	= System.currentTimeMillis();
 			
 			byte[][] last_in = new byte[in.length][block_no];
 			byte[][] last_dec = new byte[in.length][block_no];
@@ -300,7 +296,7 @@ public class main_img {
 		byte[] key1 = get_key();
 		
 		try{
-			FileWriter myWriter = new FileWriter("Results/"+System.nanoTime()+".csv");
+			FileWriter myWriter = new FileWriter("Results/"+System.currentTimeMillis()+".csv");
 			if(type == 0)
 			{
 				myWriter.write("Execution Type : SEQ \n");
